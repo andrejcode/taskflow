@@ -20,8 +20,6 @@ app.get('/', (_req: Request, res: Response) => {
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);
 
-  socket.emit('welcome', { message: 'Welcome to the server!' });
-
   socket.on('message', (data) => {
     console.log('Message received:', data);
 

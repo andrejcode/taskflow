@@ -19,15 +19,9 @@ function App() {
       setMessages((prevMessages) => [...prevMessages, message]);
     };
 
-    const onWelcome = (message: string) => {
-      console.log(message);
-    };
-
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('message', onMessage);
-
-    socket.on('welcome', onWelcome);
 
     return () => {
       socket.off('connect', onConnect);
