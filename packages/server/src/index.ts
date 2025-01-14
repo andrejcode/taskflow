@@ -1,8 +1,19 @@
 import express, { Request, Response } from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import cors from 'cors';
+import config from './config';
 
 const app = express();
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+  })
+);
+app.use(express.json());
+
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -11,7 +22,9 @@ const io = new Server(server, {
   },
 });
 
-const PORT = process.env.PORT || 3000;
+app.use('/health', (_req: Request, res: Response) => {
+  res.sendStatus(200);
+});
 
 app.get('/', (_req: Request, res: Response) => {
   res.send('Hello TaskFlow');
@@ -31,6 +44,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(config.port, () => {
+  console.log(`Server is running on http://localhost:${config.port}`);
 });
