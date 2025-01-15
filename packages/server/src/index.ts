@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import config from './config';
+import { connectDB, disconnectDB } from './database';
 
 const app = express();
 
@@ -44,6 +45,16 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(config.port, () => {
+await connectDB();
+
+const serverInstance = server.listen(config.port, () => {
   console.log(`Server is running on http://localhost:${config.port}`);
+});
+
+process.on('SIGINT', async () => {
+  await disconnectDB();
+  serverInstance.close(() => {
+    console.log('Server closed.');
+    process.exit(0);
+  });
 });
