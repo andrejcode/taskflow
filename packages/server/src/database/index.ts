@@ -9,7 +9,7 @@ export async function connectDB() {
     let uri: string = config.dbUri;
 
     if (config.env === 'test') {
-      mongoMemoryServer = new MongoMemoryServer();
+      mongoMemoryServer = await MongoMemoryServer.create();
       uri = mongoMemoryServer.getUri();
       console.log('Using in-memory MongoDB for testing.');
     }
