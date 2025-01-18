@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { socket } from './socket';
 
-function App() {
+export default function App() {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState('');
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -58,5 +58,3 @@ function App() {
     </>
   );
 }
-
-export default App;

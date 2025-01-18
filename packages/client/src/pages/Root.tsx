@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router';
 import { useState, useEffect } from 'react';
 
-function Root() {
+export default function Root() {
   const [theme, setTheme] = useState('light');
 
   const toggleTheme = () => {
@@ -36,5 +36,3 @@ function Root() {
     </>
   );
 }
-
-export default Root;
