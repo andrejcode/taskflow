@@ -1,7 +1,17 @@
 import { Link } from 'react-router';
 import ThemeController from './ThemeController';
+import useUserContext from '@/hooks/useUserContext';
+import { removeUserToken } from '@/utils/auth';
+import { getInitials } from '@/utils/user';
 
 export default function Header() {
+  const { user, isLoading, removeUser } = useUserContext();
+
+  const handleLogout = () => {
+    removeUser();
+    removeUserToken();
+  };
+
   return (
     <header>
       <nav className="navbar bg-base-300">
@@ -25,7 +35,7 @@ export default function Header() {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
             >
               <li>
                 <a>Item 1</a>
@@ -59,7 +69,7 @@ export default function Header() {
             <li>
               <details>
                 <summary>Parent</summary>
-                <ul className="p-2">
+                <ul className="z-[1] bg-base-100 p-2">
                   <li>
                     <a>Submenu 1</a>
                   </li>
@@ -77,34 +87,41 @@ export default function Header() {
 
         <div className="navbar-end">
           <ThemeController />
-          <div className="mr-2" />
-          <div className="dropdown dropdown-end">
-            {/* TODO: Refactor avatar component */}
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-              <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content w-10 rounded-full">
-                  <span className="text-sm">AM</span>
+          <div className="mr-3" />
+          {isLoading ? (
+            <span className="loading loading-spinner loading-lg"></span>
+          ) : user ? (
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-circle btn-ghost">
+                <div className="avatar placeholder">
+                  <div className="w-10 rounded-full bg-neutral text-neutral-content">
+                    <span className="text-sm">{getInitials(user.name)}</span>
+                  </div>
                 </div>
               </div>
+              <ul
+                tabIndex={0}
+                className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
+              >
+                <li>
+                  <a className="justify-between">
+                    Profile
+                    <span className="badge">New</span>
+                  </a>
+                </li>
+                <li>
+                  <a>Settings</a>
+                </li>
+                <li>
+                  <button onClick={handleLogout}>Logout</button>
+                </li>
+              </ul>
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-            >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
+          ) : (
+            <Link to="/login" className="btn btn-primary">
+              Login
+            </Link>
+          )}
         </div>
       </nav>
     </header>

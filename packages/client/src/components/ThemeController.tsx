@@ -8,7 +8,6 @@ export default function ThemeController() {
       <input
         type="checkbox"
         className="theme-controller"
-        value="synthwave"
         checked={theme === 'light' ? false : true}
         onChange={toggleTheme}
       />

@@ -20,8 +20,9 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
-    "removeComments": true
+    "removeComments": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["./src/**/*", "tests"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

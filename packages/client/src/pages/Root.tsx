@@ -3,15 +3,11 @@ import Header from '@/components/Header';
 
 export default function Root() {
   return (
-    <>
+    <div className="flex h-screen flex-col">
       <Header />
-      <main>
-        <div className="container mx-auto py-10 text-center">
-          <h1 className="text-primary">Hello, DaisyUI in React!</h1>
-        </div>
+      <main className="flex-grow">
         <Outlet />
       </main>
-      <footer></footer>
-    </>
+    </div>
   );
 }

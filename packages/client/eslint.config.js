@@ -37,6 +37,31 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       ...eslintConfigPrettier.rules,
       'prettier/prettier': 'error',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'app',
+                'socket',
+                'config',
+                'utils',
+                'tests',
+                'services',
+                'controllers',
+                'middlewares',
+                'models',
+                'routers',
+                'database',
+                'schemas',
+                'types',
+              ].flatMap((path) => [`@server/${path}`, `@taskflow/server/src/${path}`]),
+              message: 'Please only import from @server/shared or @taskflow/server/src/shared.',
+            },
+          ],
+        },
+      ],
     },
   }
 );
