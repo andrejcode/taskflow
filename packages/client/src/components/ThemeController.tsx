@@ -14,7 +14,7 @@ export default function ThemeController() {
 
       {/* Sun icon */}
       <svg
-        className="swap-off h-10 w-10 fill-current"
+        className="swap-off size-10 fill-current"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
       >
@@ -23,7 +23,7 @@ export default function ThemeController() {
 
       {/* Moon icon */}
       <svg
-        className="swap-on h-10 w-10 fill-current"
+        className="swap-on size-10 fill-current"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
       >
