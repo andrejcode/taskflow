@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 interface DropdownProps {
   className?: string;
   buttonClassName?: string;
@@ -12,8 +14,8 @@ export default function Dropdown({
   content,
 }: DropdownProps) {
   return (
-    <div className={`dropdown ${className}`}>
-      <div tabIndex={0} role="button" className={`btn ${buttonClassName}`}>
+    <div className={clsx('dropdown', className)}>
+      <div tabIndex={0} role="button" className={clsx('btn', buttonClassName)}>
         {trigger}
       </div>
       {content}

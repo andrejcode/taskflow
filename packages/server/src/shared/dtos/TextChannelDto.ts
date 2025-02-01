@@ -1,20 +1,22 @@
-export default class UserDto {
+import { UserMessageDto } from './UserDtos';
+
+export class TextChannelDto {
   id: string;
   name: string;
-  email: string;
+  messages: UserMessageDto[];
   createdAt: Date;
   updatedAt: Date;
 
   constructor(
     id: string,
     name: string,
-    email: string,
+    messages: UserMessageDto[],
     createdAt: Date,
     updatedAt: Date
   ) {
     this.id = id;
     this.name = name;
-    this.email = email;
+    this.messages = messages;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }

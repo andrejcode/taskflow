@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt, { type JwtPayload, type VerifyErrors } from 'jsonwebtoken';
 import config from '@/config';
+import { isValidObjectId } from '@/utils/mongo';
 
 export function authenticateToken(
   req: Request,
@@ -17,11 +18,16 @@ export function authenticateToken(
       config.jwtSecret,
       (err: VerifyErrors | null, payload: string | JwtPayload | undefined) => {
         if (payload && typeof payload !== 'string') {
-          req.userId = payload.id;
-          next();
+          if (typeof payload.id === 'string' && isValidObjectId(payload.id)) {
+            req.userId = payload.id;
+          } else {
+            return res.sendStatus(401);
+          }
+
+          return next();
         } else {
           if (err?.message === 'jwt expired') {
-            res.status(401).send('Token expired.');
+            return res.status(401).send('Token expired.');
           }
 
           res.sendStatus(401);

@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
 import UserContext, { type UserContextType } from '@/contexts/UserContext';
 import { getUserToken } from '@/utils/auth';
-import UserDto from '@server/shared/dtos';
+import { type UserDto } from '@server/shared/dtos';
 import useHandleTokenExpiration from '@/hooks/useHandleTokenExpiration';
+import useToastContext from '@/hooks/useToastContext';
 
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserContextType['user'] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { addToast } = useToastContext();
 
   const { checkTokenExpiration } = useHandleTokenExpiration();
 
   useEffect(() => {
     const token = getUserToken();
 
-    const fetchUser = async () => {
-      setIsLoading(true);
-      setError(null);
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
 
+    const fetchUser = async () => {
       try {
-        const response = await fetch('/api/users/profile', {
+        const response = await fetch('/api/users', {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -31,22 +34,26 @@ export default function UserProvider({ children }: { children: React.ReactNode }
           setUser(userDto);
         } else {
           await checkTokenExpiration(response);
-
-          setError('Unable to get user data.');
-          setUser(null);
+          throw new Error('Unable to get user data.');
         }
-      } catch {
-        setError('An unexpected error occurred.');
+      } catch (error) {
+        if (error instanceof Error) {
+          addToast(error.message, 'error');
+        } else {
+          addToast('An unexpected error occurred while getting the user.', 'error');
+        }
         setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (!user && token) {
+    if (!user) {
       void fetchUser();
     }
-  }, [checkTokenExpiration, user]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkTokenExpiration]);
 
   const saveUser = (user: UserDto) => {
     setUser(user);
@@ -57,7 +64,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   };
 
   return (
-    <UserContext.Provider value={{ user, isLoading, error, saveUser, removeUser }}>
+    <UserContext.Provider value={{ user, isLoading, saveUser, removeUser }}>
       {children}
     </UserContext.Provider>
   );

@@ -1,17 +1,13 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import security from 'eslint-plugin-security';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import eslintPluginSecurity from 'eslint-plugin-security';
 import eslintPluginPrettier from 'eslint-plugin-prettier';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist', 'build'] },
+  { ignores: ['dist'] },
   {
-    env: {
-      node: true,
-      es2020: true,
-    },
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
@@ -19,22 +15,21 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        es2020: true,
+      },
       parserOptions: {
         project: ['./tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
+      security: eslintPluginSecurity,
       prettier: eslintPluginPrettier,
-      security,
     },
     rules: {
       'import/extensions': 'off',
-      'import/no-extraneous-dependencies': [
-        'error',
-        { devDependencies: ['**/test/**', '**/tests/**'] },
-      ],
       'no-use-before-define': ['error', { functions: false }],
       '@typescript-eslint/no-use-before-define': [
         'error',
@@ -49,6 +44,8 @@ export default tseslint.config(
       'security/detect-non-literal-fs-filename': 'warn',
       'security/detect-child-process': 'warn',
       'security/detect-object-injection': 'warn',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
       ...eslintConfigPrettier.rules,
       'prettier/prettier': 'error',
     },

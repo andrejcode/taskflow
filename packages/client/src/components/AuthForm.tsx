@@ -1,8 +1,8 @@
 import useAuthForm from '@/hooks/useAuthForm';
 import { Link } from 'react-router';
 import { type SignupFormData } from '@/types';
-import FormControl from './FormControl';
-import ErrorAlert from './ErrorAlert';
+import FormControl from './ui/FormControl';
+import Alert from './ui/Alert';
 
 export default function AuthForm({ isLogin }: { isLogin: boolean }) {
   const { formData, formErrors, isLoading, error, handleChange, handleSubmit } =
@@ -11,7 +11,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
   return (
     <div className="flex h-full items-center justify-center">
       <div className="card w-full max-w-sm shrink-0 bg-base-200 shadow-2xl">
-        {error && <ErrorAlert error={error} />}
+        {error && <Alert message={error} variant="error" />}
 
         <form className="card-body" onSubmit={(event) => void handleSubmit(event)}>
           {!isLogin && (

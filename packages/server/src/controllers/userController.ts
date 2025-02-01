@@ -2,10 +2,28 @@ import type { Request, Response } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import User from '@/models/User';
-import { loginSchema, signupSchema } from '@/shared/schemas/userSchemas';
+import { loginSchema, signupSchema } from '@/shared/schemas';
 import { hashPassword, jwtSign } from '@/utils/auth';
-import { isMongoDBDuplicateKeyError } from '@/utils/mongo';
+import { isDuplicateEmailError } from '@/utils/mongo';
 import { mapUserToDto } from '@/services/userService';
+
+export async function getUser(req: Request, res: Response) {
+  const { userId } = req;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).send('User not found.');
+      return;
+    }
+
+    const userDto = mapUserToDto(user);
+    res.json(userDto);
+  } catch {
+    res.status(500).send('Internal server error.');
+  }
+}
 
 export async function signupUser(req: Request, res: Response) {
   try {
@@ -23,14 +41,13 @@ export async function signupUser(req: Request, res: Response) {
       return;
     }
 
-    if (isMongoDBDuplicateKeyError(error) && error.keyValue?.email) {
+    if (isDuplicateEmailError(error)) {
       res
         .status(400)
         .send('Email is already in use. Please use a different email.');
       return;
     }
 
-    console.error('Error signing up user:', error);
     res.status(500).send('Internal server error.');
   }
 }
@@ -60,26 +77,6 @@ export async function loginUser(req: Request, res: Response) {
       return;
     }
 
-    console.error('Error logging in user:', error);
-    res.status(500).send('Internal server error.');
-  }
-}
-
-export async function getUserProfile(req: Request, res: Response) {
-  const { userId } = req;
-
-  try {
-    const user = await User.findById(userId);
-
-    if (!user) {
-      res.status(404).send('User not found.');
-      return;
-    }
-
-    const userDto = mapUserToDto(user);
-    res.json(userDto);
-  } catch (error) {
-    console.error('Error getting user profile:', error);
     res.status(500).send('Internal server error.');
   }
 }

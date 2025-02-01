@@ -1,11 +1,16 @@
 import { Link } from 'react-router';
 import ThemeController from './ThemeController';
+import Avatar from './ui/Avatar';
+import Dropdown from './ui/Dropdown';
+import LoadingSpinner from './ui/LoadingSpinner';
 import useUserContext from '@/hooks/useUserContext';
+import useWorkspacesSummaryContext from '@/hooks/useWorkspaceSummaryContext';
 import { removeUserToken } from '@/utils/auth';
-import { getInitials } from '@/utils/user';
+import { openModal } from '@/utils/modal';
 
 export default function Header() {
-  const { user, isLoading, removeUser } = useUserContext();
+  const { user, isLoading: isUserLoading, removeUser } = useUserContext();
+  const { isLoading: isWorkspacesLoading, workspacesSummary } = useWorkspacesSummaryContext();
 
   const handleLogout = () => {
     removeUser();
@@ -16,8 +21,9 @@ export default function Header() {
     <header>
       <nav className="navbar bg-base-300">
         <div className="navbar-start">
-          <div className="dropdown">
-            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+          <Dropdown
+            buttonClassName="btn-ghost lg:hidden"
+            trigger={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -32,91 +38,112 @@ export default function Header() {
                   d="M4 6h16M4 12h8m-8 6h16"
                 />
               </svg>
-            </div>
-            <ul
-              tabIndex={0}
-              className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
-            >
-              <li>
-                <a>Item 1</a>
-              </li>
-              <li>
-                <a>Parent</a>
-                <ul className="p-2">
-                  <li>
-                    <a>Submenu 1</a>
-                  </li>
-                  <li>
-                    <a>Submenu 2</a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a>Item 3</a>
-              </li>
-            </ul>
-          </div>
-          <Link to="/" className="btn btn-ghost text-xl">
-            TaskFlow
-          </Link>
-        </div>
-
-        <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1">
-            <li>
-              <a>Item 1</a>
-            </li>
-            <li>
-              <details>
-                <summary>Parent</summary>
-                <ul className="z-[1] bg-base-100 p-2">
-                  <li>
-                    <a>Submenu 1</a>
-                  </li>
-                  <li>
-                    <a>Submenu 2</a>
-                  </li>
-                </ul>
-              </details>
-            </li>
-            <li>
-              <a>Item 3</a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="navbar-end">
-          <ThemeController />
-          <div className="mr-3" />
-          {isLoading ? (
-            <span className="loading loading-spinner loading-lg"></span>
-          ) : user ? (
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-circle btn-ghost">
-                <div className="avatar placeholder">
-                  <div className="w-10 rounded-full bg-neutral text-neutral-content">
-                    <span className="text-sm">{getInitials(user.name)}</span>
-                  </div>
-                </div>
-              </div>
+            }
+            content={
               <ul
                 tabIndex={0}
                 className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
               >
                 <li>
-                  <a className="justify-between">
-                    Profile
-                    <span className="badge">New</span>
-                  </a>
-                </li>
-                <li>
-                  <a>Settings</a>
-                </li>
-                <li>
-                  <button onClick={handleLogout}>Logout</button>
+                  <Link to="/workspaces">Workspaces</Link>
+                  <ul className="p-2">
+                    {isWorkspacesLoading ? (
+                      <li>
+                        <LoadingSpinner size="xs" />
+                      </li>
+                    ) : !workspacesSummary || workspacesSummary.length === 0 ? (
+                      <li>No workspaces</li>
+                    ) : (
+                      workspacesSummary?.map((workspace) => (
+                        <li key={workspace.id}>
+                          <Link to={`/workspaces/${workspace.id}`}>{workspace.name}</Link>
+                        </li>
+                      ))
+                    )}
+                  </ul>
                 </li>
               </ul>
-            </div>
+            }
+          />
+
+          <Link to="/" className="btn btn-ghost text-xl">
+            TaskFlow
+          </Link>
+        </div>
+
+        {user && (
+          <div className="navbar-center hidden lg:flex">
+            <ul className="menu menu-horizontal px-1">
+              <li>
+                <details>
+                  <summary>Workspaces</summary>
+                  <ul className="z-[1] bg-base-100 p-2">
+                    {isWorkspacesLoading ? (
+                      <li>
+                        <LoadingSpinner size="xs" />
+                      </li>
+                    ) : !workspacesSummary || workspacesSummary.length === 0 ? (
+                      <li className="w-36">
+                        <span>No workspaces</span>
+                      </li>
+                    ) : (
+                      workspacesSummary?.map((workspace) => (
+                        <li key={workspace.id}>
+                          <Link to={`/workspaces/${workspace.id}`}>{workspace.name}</Link>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </details>
+              </li>
+            </ul>
+
+            <button
+              className="btn btn-circle btn-primary btn-sm"
+              onClick={() => openModal('create-workspace-modal')}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        <div className="navbar-end">
+          <ThemeController />
+          <div className="mr-3" />
+          {isUserLoading ? (
+            <LoadingSpinner />
+          ) : user ? (
+            <>
+              <Dropdown
+                className="dropdown-end"
+                buttonClassName="btn-circle btn-ghost"
+                trigger={<Avatar name={user.name} />}
+                content={
+                  <ul
+                    tabIndex={0}
+                    className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
+                  >
+                    <li>
+                      <Link to="/profile" className="justify-between">
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <button onClick={handleLogout}>Logout</button>
+                    </li>
+                  </ul>
+                }
+              />
+            </>
           ) : (
             <Link to="/login" className="btn btn-primary">
               Login

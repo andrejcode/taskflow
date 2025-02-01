@@ -1,7 +1,36 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
+
+export interface IUserRole {
+  userId: Types.ObjectId;
+  role: 'admin' | 'editor' | 'viewer';
+}
+
+export const userRoleSchema = new Schema<IUserRole>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    role: { type: String, enum: ['admin', 'editor', 'viewer'], required: true },
+  },
+  { _id: false, timestamps: false }
+);
+
+export interface IUserMessage {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const userMessageSchema = new Schema<IUserMessage>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
 export interface IUser {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   email: string;
   password: string;
@@ -9,7 +38,7 @@ export interface IUser {
   updatedAt: Date;
 }
 
-const userSchema = new Schema(
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -24,35 +53,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-  },
-  { timestamps: true }
-);
-
-export interface IUserRole {
-  user: string;
-  role: 'admin' | 'editor' | 'viewer';
-}
-
-export const userRoleSchema = new Schema(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    role: { type: String, enum: ['admin', 'editor', 'viewer'], required: true },
-  },
-  { _id: false }
-);
-
-export interface IUserMessage {
-  _id: string;
-  user: string;
-  text: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export const userMessageSchema = new Schema(
-  {
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true },
   },
   { timestamps: true }
 );

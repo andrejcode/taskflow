@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { z } from 'zod';
-import { signupSchema, loginSchema } from '@server/shared/schemas/userSchemas';
+import { signupSchema, loginSchema } from '@server/shared/schemas/';
 import { LoginFormData, SignupFormData, FormData, FormErrors } from '@/types';
-import UserDto from '@server/shared/dtos';
+import { UserDto } from '@server/shared/dtos';
 import { saveUserToken } from '@/utils/auth';
 import useUserContext from './useUserContext';
-import { useNavigate } from 'react-router';
 
 const initialLoginFormData: LoginFormData = {
   email: '',
@@ -27,7 +26,6 @@ export default function useAuthForm(isLogin: boolean) {
   const [error, setError] = useState<string | null>(null);
 
   const { saveUser } = useUserContext();
-  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -62,8 +60,6 @@ export default function useAuthForm(isLogin: boolean) {
 
         saveUserToken(token);
         saveUser(user);
-        // TODO: Navigate to workspaces page
-        void navigate('/');
       } else {
         const responseText = await response.text();
         setError(responseText);

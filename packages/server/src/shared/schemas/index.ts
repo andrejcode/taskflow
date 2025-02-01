@@ -22,13 +22,15 @@ const passwordSchema = z
 
 const emailSchema = z.string().email('Invalid email address.');
 
+export const nameSchema = z
+  .string()
+  .trim()
+  .min(2, 'Name must be at least 2 characters long.')
+  .max(50, 'Name must be at most 50 characters long.');
+
 export const signupSchema = z
   .object({
-    name: z
-      .string()
-      .trim()
-      .min(2, 'Name must be at least 2 characters long.')
-      .max(50, 'Name must be at most 50 characters long.'),
+    name: nameSchema,
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string().min(1, 'Password is required.'),

@@ -15,6 +15,56 @@ afterAll(async () => {
   await disconnectDB();
 });
 
+describe('GET /users', () => {
+  it('should return 401 for unauthorized user', async () => {
+    const response = await supertest(app).get('/users').expect(401);
+
+    expect(response.text).toBe('Unauthorized');
+  });
+
+  it('should return user profile for authorized user', async () => {
+    const hashedPassword = await hashPassword('Password1!');
+
+    const user = await User.create({
+      name: 'Test User',
+      email: 'testuser@test.com',
+      password: hashedPassword,
+    });
+
+    const token = jwtSign(user._id.toString());
+
+    const response = await supertest(app)
+      .get('/users')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      id: user._id.toString(),
+      name: 'Test User',
+      email: 'testuser@test.com',
+    });
+  });
+
+  it('should return 401 for expired token', async () => {
+    const hashedPassword = await hashPassword('Password1!');
+
+    const user = await User.create({
+      name: 'Test User',
+      email: 'testuser2@test.com',
+      password: hashedPassword,
+    });
+
+    const token = jwtSign(user._id.toString(), '-1h');
+
+    const response = await supertest(app)
+      .get('/users')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(401);
+
+    expect(response.text).toBe('Token expired.');
+  });
+});
+
 describe('POST /users/signup', () => {
   it('should return 400 for invalid payload', async () => {
     const response = await supertest(app)
@@ -94,55 +144,5 @@ describe('POST /users/login', () => {
 
     expect(response.body).toHaveProperty('token');
     expect(response.body.user).toHaveProperty('email', 'test1@test.com');
-  });
-});
-
-describe('GET /users/profile', () => {
-  it('should return 401 for unauthorized user', async () => {
-    const response = await supertest(app).get('/users/profile').expect(401);
-
-    expect(response.text).toBe('Unauthorized');
-  });
-
-  it('should return user profile for authorized user', async () => {
-    const hashedPassword = await hashPassword('Password1!');
-
-    const user = await User.create({
-      name: 'Test User',
-      email: 'testuser@test.com',
-      password: hashedPassword,
-    });
-
-    const token = jwtSign(user._id.toString());
-
-    const response = await supertest(app)
-      .get('/users/profile')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
-
-    expect(response.body).toMatchObject({
-      id: user._id.toString(),
-      name: 'Test User',
-      email: 'testuser@test.com',
-    });
-  });
-
-  it('should return 401 for expired token', async () => {
-    const hashedPassword = await hashPassword('Password1!');
-
-    const user = await User.create({
-      name: 'Test User',
-      email: 'testuser2@test.com',
-      password: hashedPassword,
-    });
-
-    const token = jwtSign(user._id.toString(), '-1h');
-
-    const response = await supertest(app)
-      .get('/users/profile')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(401);
-
-    expect(response.text).toBe('Token expired.');
   });
 });
