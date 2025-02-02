@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
-import Root from '../pages/Root';
+import RootLayout from '../layouts/RootLayout';
 import NotFound from '../pages/NotFound';
 import Home from '../pages/Home';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -22,7 +22,7 @@ describe('main', () => {
             <UserProvider>
               <WorkspaceSummaryProvider>
                 <Routes>
-                  <Route path="/" element={<Root />}>
+                  <Route element={<RootLayout />}>
                     <Route index element={<Home />} />
                   </Route>
                 </Routes>
