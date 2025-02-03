@@ -59,9 +59,21 @@ export default function WorkspaceSummaryProvider({ children }: { children: React
     });
   };
 
+  const removeWorkspaceSummary = (workspaceId: string) => {
+    setWorkspacesSummary((prevWorkspacesSummary) => {
+      if (!prevWorkspacesSummary) {
+        return [];
+      }
+
+      return prevWorkspacesSummary.filter(
+        (workspaceSummary) => workspaceSummary.id !== workspaceId
+      );
+    });
+  };
+
   return (
     <WorkspacesSummaryContext.Provider
-      value={{ workspacesSummary, addWorkspaceSummary, isLoading }}
+      value={{ workspacesSummary, addWorkspaceSummary, removeWorkspaceSummary, isLoading }}
     >
       {children}
     </WorkspacesSummaryContext.Provider>

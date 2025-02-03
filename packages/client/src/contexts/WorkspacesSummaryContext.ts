@@ -4,6 +4,7 @@ import { createContext } from 'react';
 export interface WorkspacesSummaryContextType {
   workspacesSummary: WorkspaceSummaryDto[] | null;
   addWorkspaceSummary: (workspaceSummary: WorkspaceSummaryDto) => void;
+  removeWorkspaceSummary: (workspaceId: string) => void;
   isLoading: boolean;
 }
 
