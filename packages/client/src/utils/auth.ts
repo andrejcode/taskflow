@@ -1,11 +1,21 @@
-export function getUserToken() {
+export function getTokenFromLocalStorage() {
   return localStorage.getItem('token');
 }
 
-export function saveUserToken(token: string) {
+export function saveTokenToLocalStorage(token: string) {
   localStorage.setItem('token', token);
 }
 
-export function removeUserToken() {
+export function removeTokenFromLocalStorage() {
   localStorage.removeItem('token');
+}
+
+export async function checkTokenExpiration(response: Response) {
+  const responseText = await response.text();
+
+  if (response.status === 401 && responseText === 'Token expired.') {
+    return true;
+  }
+
+  return false;
 }

@@ -12,7 +12,7 @@ export interface ITextChannel {
 export const textChannelSchema = new Schema<ITextChannel>(
   {
     name: { type: String, required: true },
-    messages: [userMessageSchema],
+    messages: { type: [userMessageSchema], default: [] },
   },
   { timestamps: true }
 );

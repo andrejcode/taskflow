@@ -12,7 +12,7 @@ export interface IList {
 export const listSchema = new Schema<IList>(
   {
     title: { type: String, required: true },
-    tasks: [taskSchema],
+    tasks: { type: [taskSchema], default: [] },
   },
   { timestamps: true }
 );

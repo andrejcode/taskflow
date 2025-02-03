@@ -49,7 +49,7 @@ describe('GET /workspaces', () => {
   it('should return workspaces summary for authorized user', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId, role: 'admin' }],
+      users: [{ user: userId, role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -122,7 +122,7 @@ describe('GET /workspaces/:workspaceId', () => {
   it('should return 403 for authorized user without access to workspace', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'admin' }],
+      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -138,7 +138,7 @@ describe('GET /workspaces/:workspaceId', () => {
   it('should return 403 for authorized user without admin role', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'viewer' }],
+      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'viewer' }],
     });
 
     const response = await supertest(app)
@@ -154,7 +154,7 @@ describe('GET /workspaces/:workspaceId', () => {
   it('should return workspace for authorized user', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId, role: 'admin' }],
+      users: [{ user: userId, role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -165,7 +165,7 @@ describe('GET /workspaces/:workspaceId', () => {
     expect(response.body).toMatchObject({
       id: workspace._id.toString(),
       name: 'Test Workspace',
-      users: [{ userId, role: 'admin' }],
+      users: [{ user: { id: userId }, role: 'admin' }],
       boards: [],
       textChannels: [],
       createdAt: workspace.createdAt.toISOString(),
@@ -202,7 +202,7 @@ describe('DELETE /workspaces/:workspaceId', () => {
   it('should return 403 for authorized user without access to workspace', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'admin' }],
+      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -218,7 +218,7 @@ describe('DELETE /workspaces/:workspaceId', () => {
   it('should return 403 for authorized user without admin role', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'viewer' }],
+      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'viewer' }],
     });
 
     const response = await supertest(app)
@@ -234,7 +234,7 @@ describe('DELETE /workspaces/:workspaceId', () => {
   it('should delete workspace for authorized user', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ userId, role: 'admin' }],
+      users: [{ user: userId, role: 'admin' }],
     });
 
     await supertest(app)

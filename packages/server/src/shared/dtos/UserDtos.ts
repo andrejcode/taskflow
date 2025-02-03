@@ -1,6 +1,6 @@
 export class UserMessageDto {
   id: string;
-  userId: string;
+  user: string;
   text: string;
   createdAt: Date;
   updatedAt: Date;
@@ -13,7 +13,7 @@ export class UserMessageDto {
     updatedAt: Date
   ) {
     this.id = id;
-    this.userId = userId;
+    this.user = userId;
     this.text = text;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -21,10 +21,10 @@ export class UserMessageDto {
 }
 
 export class UserRoleDto {
-  userId: string;
+  user: string;
   role: string;
   constructor(userId: string, role: string) {
-    this.userId = userId;
+    this.user = userId;
     this.role = role;
   }
 }
@@ -48,5 +48,15 @@ export class UserDto {
     this.email = email;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+  }
+}
+
+export class UserRoleDtoPopulated {
+  user: UserDto;
+  role: string;
+
+  constructor(user: UserDto, role: string) {
+    this.user = user;
+    this.role = role;
   }
 }

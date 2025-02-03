@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
 import UserContext, { type UserContextType } from '@/contexts/UserContext';
-import { getUserToken } from '@/utils/auth';
+import {
+  getTokenFromLocalStorage,
+  checkTokenExpiration,
+  removeTokenFromLocalStorage,
+  saveTokenToLocalStorage,
+} from '@/utils/auth';
 import { type UserDto } from '@server/shared/dtos';
-import useHandleTokenExpiration from '@/hooks/useHandleTokenExpiration';
 import useToastContext from '@/hooks/useToastContext';
 
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserContextType['user'] | null>(null);
+  const [token, setToken] = useState<string | null>(getTokenFromLocalStorage());
   const [isLoading, setIsLoading] = useState(true);
+
   const { addToast } = useToastContext();
 
-  const { checkTokenExpiration } = useHandleTokenExpiration();
-
   useEffect(() => {
-    const token = getUserToken();
-
     if (!token) {
+      setToken(null);
+      setUser(null);
       setIsLoading(false);
       return;
     }
@@ -33,8 +37,13 @@ export default function UserProvider({ children }: { children: React.ReactNode }
           const userDto = (await response.json()) as UserDto;
           setUser(userDto);
         } else {
-          await checkTokenExpiration(response);
-          throw new Error('Unable to get user data.');
+          if (await checkTokenExpiration(response)) {
+            removeToken();
+            removeUser();
+            addToast('Your session has expired. Please log in again.', 'error');
+          } else {
+            throw new Error('Unable to get user data.');
+          }
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -48,12 +57,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       }
     };
 
-    if (!user) {
-      void fetchUser();
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkTokenExpiration]);
+    void fetchUser();
+  }, [token, addToast]);
 
   const saveUser = (user: UserDto) => {
     setUser(user);
@@ -63,8 +68,20 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     setUser(null);
   };
 
+  const saveToken = (token: string) => {
+    saveTokenToLocalStorage(token);
+    setToken(token);
+  };
+
+  const removeToken = () => {
+    removeTokenFromLocalStorage();
+    setToken(null);
+  };
+
   return (
-    <UserContext.Provider value={{ user, isLoading, saveUser, removeUser }}>
+    <UserContext.Provider
+      value={{ token, saveToken, removeToken, user, isLoading, saveUser, removeUser }}
+    >
       {children}
     </UserContext.Provider>
   );

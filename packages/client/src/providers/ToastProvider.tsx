@@ -10,10 +10,10 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   }, []);
 
-  const addToast = (message: string, variant: AlertVariant) => {
+  const addToast = useCallback((message: string, variant: AlertVariant) => {
     const id = Date.now();
     setToasts((prevToasts) => [...prevToasts, { id, message, variant }]);
-  };
+  }, []);
 
   useEffect(() => {
     const latestToast = toasts[toasts.length - 1];
@@ -28,7 +28,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
   return (
     <ToastContext.Provider value={{ addToast }}>
       <>
-        <div className="toast toast-end">
+        <div className="toast toast-end z-50">
           {toasts.map((toast, index) => (
             <Alert key={index} message={toast.message} variant={toast.variant} />
           ))}

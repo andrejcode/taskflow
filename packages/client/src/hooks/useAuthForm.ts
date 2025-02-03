@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { signupSchema, loginSchema } from '@server/shared/schemas/';
 import { LoginFormData, SignupFormData, FormData, FormErrors } from '@/types';
 import { UserDto } from '@server/shared/dtos';
-import { saveUserToken } from '@/utils/auth';
 import useUserContext from './useUserContext';
 
 const initialLoginFormData: LoginFormData = {
@@ -25,7 +24,7 @@ export default function useAuthForm(isLogin: boolean) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { saveUser } = useUserContext();
+  const { saveUser, saveToken } = useUserContext();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -58,7 +57,7 @@ export default function useAuthForm(isLogin: boolean) {
 
         const { token, user } = (await response.json()) as { token: string; user: UserDto };
 
-        saveUserToken(token);
+        saveToken(token);
         saveUser(user);
       } else {
         const responseText = await response.text();

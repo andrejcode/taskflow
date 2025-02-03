@@ -2,17 +2,18 @@ import { useEffect, useState } from 'react';
 import WorkspacesSummaryContext from '@/contexts/WorkspacesSummaryContext.ts';
 import { WorkspaceSummaryDto } from '@server/shared/dtos';
 import useToastContext from '@/hooks/useToastContext';
-import { getUserToken } from '@/utils/auth';
+import useUserContext from '@/hooks/useUserContext';
 
 export default function WorkspaceSummaryProvider({ children }: { children: React.ReactNode }) {
   const [workspacesSummary, setWorkspacesSummary] = useState<WorkspaceSummaryDto[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
   const { addToast } = useToastContext();
+  const { token } = useUserContext();
 
   useEffect(() => {
-    const token = getUserToken();
-
     if (!token) {
+      setWorkspacesSummary(null);
       setIsLoading(false);
       return;
     }
@@ -46,8 +47,7 @@ export default function WorkspaceSummaryProvider({ children }: { children: React
     };
 
     void fetchWorkspacesSummary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [addToast, token]);
 
   const addWorkspaceSummary = (workspaceSummary: WorkspaceSummaryDto) => {
     setWorkspacesSummary((prevWorkspacesSummary) => {

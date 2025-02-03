@@ -1,13 +1,13 @@
 import { model, Schema, Types } from 'mongoose';
 
 export interface IUserRole {
-  userId: Types.ObjectId;
+  user: Types.ObjectId;
   role: 'admin' | 'editor' | 'viewer';
 }
 
 export const userRoleSchema = new Schema<IUserRole>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     role: { type: String, enum: ['admin', 'editor', 'viewer'], required: true },
   },
   { _id: false, timestamps: false }
@@ -15,7 +15,7 @@ export const userRoleSchema = new Schema<IUserRole>(
 
 export interface IUserMessage {
   _id: Types.ObjectId;
-  userId: Types.ObjectId;
+  user: Types.ObjectId;
   text: string;
   createdAt: Date;
   updatedAt: Date;
@@ -23,7 +23,7 @@ export interface IUserMessage {
 
 export const userMessageSchema = new Schema<IUserMessage>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     text: { type: String, required: true },
   },
   { timestamps: true }
@@ -36,6 +36,11 @@ export interface IUser {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IUserRolePopulated {
+  user: IUser;
+  role: 'admin' | 'editor' | 'viewer';
 }
 
 const userSchema = new Schema<IUser>(

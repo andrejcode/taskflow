@@ -5,6 +5,7 @@ import { IWorkspace } from '@/models/Workspace';
 import {
   BoardDto,
   ListDto,
+  UserRoleDtoPopulated,
   TaskDto,
   TextChannelDto,
   UserMessageDto,
@@ -12,6 +13,8 @@ import {
   WorkspaceDto,
   WorkspaceSummaryDto,
 } from '@/shared/dtos';
+import { mapUserToDto } from './userService';
+import { IUser } from '@/models/User';
 
 export function mapWorkspaceSummaryToDto(workspace: IWorkspace) {
   return new WorkspaceSummaryDto(
@@ -27,7 +30,26 @@ export function mapWorkspaceToDto(workspace: IWorkspace) {
     workspace._id.toString(),
     workspace.name,
     workspace.users.map(
-      (user) => new UserRoleDto(user.userId.toString(), user.role)
+      (populatedUser) =>
+        new UserRoleDto(populatedUser.user._id.toString(), populatedUser.role)
+    ),
+    workspace.boards.map((board) => mapBoardToDto(board)),
+    workspace.textChannels.map((channel) => mapTextChannelToDto(channel)),
+    workspace.createdAt,
+    workspace.updatedAt
+  );
+}
+
+export function mapWorkspaceToDtoWithUserPopulated(workspace: IWorkspace) {
+  return new WorkspaceDto(
+    workspace._id.toString(),
+    workspace.name,
+    workspace.users.map(
+      (populatedUser) =>
+        new UserRoleDtoPopulated(
+          mapUserToDto(populatedUser.user as IUser),
+          populatedUser.role
+        )
     ),
     workspace.boards.map((board) => mapBoardToDto(board)),
     workspace.textChannels.map((channel) => mapTextChannelToDto(channel)),
@@ -54,7 +76,7 @@ export function mapTextChannelToDto(channel: ITextChannel) {
       (message) =>
         new UserMessageDto(
           message._id.toString(),
-          message.userId.toString(),
+          message.user.toString(),
           message.text,
           message.createdAt,
           message.updatedAt

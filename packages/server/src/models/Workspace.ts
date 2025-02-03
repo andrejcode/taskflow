@@ -1,12 +1,12 @@
 import { model, Schema, Types } from 'mongoose';
-import { IUserRole, userRoleSchema } from './User';
+import { IUserRole, IUserRolePopulated, userRoleSchema } from './User';
 import { boardSchema, IBoard } from './Board';
 import { ITextChannel, textChannelSchema } from './TextChannel';
 
 export interface IWorkspace {
   _id: Types.ObjectId;
   name: string;
-  users: IUserRole[];
+  users: IUserRole[] | IUserRolePopulated[];
   boards: IBoard[];
   textChannels: ITextChannel[];
   createdAt: Date;
@@ -16,9 +16,9 @@ export interface IWorkspace {
 const workspaceSchema = new Schema<IWorkspace>(
   {
     name: { type: String, required: true },
-    users: [userRoleSchema],
-    boards: [boardSchema],
-    textChannels: [textChannelSchema],
+    users: { type: [userRoleSchema], default: [] },
+    boards: { type: [boardSchema], default: [] },
+    textChannels: { type: [textChannelSchema], default: [] },
   },
   { timestamps: true }
 );

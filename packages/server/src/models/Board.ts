@@ -12,7 +12,7 @@ export interface IBoard {
 export const boardSchema = new Schema<IBoard>(
   {
     title: { type: String, required: true },
-    lists: [listSchema],
+    lists: { type: [listSchema], default: [] },
   },
   { timestamps: true }
 );

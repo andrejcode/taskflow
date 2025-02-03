@@ -5,16 +5,15 @@ import Dropdown from './ui/Dropdown';
 import LoadingSpinner from './ui/LoadingSpinner';
 import useUserContext from '@/hooks/useUserContext';
 import useWorkspacesSummaryContext from '@/hooks/useWorkspaceSummaryContext';
-import { removeUserToken } from '@/utils/auth';
 import { openModal } from '@/utils/modal';
 
 export default function Header() {
-  const { user, isLoading: isUserLoading, removeUser } = useUserContext();
+  const { user, isLoading: isUserLoading, removeUser, removeToken } = useUserContext();
   const { isLoading: isWorkspacesLoading, workspacesSummary } = useWorkspacesSummaryContext();
 
   const handleLogout = () => {
     removeUser();
-    removeUserToken();
+    removeToken();
   };
 
   return (
@@ -89,7 +88,16 @@ export default function Header() {
                     ) : (
                       workspacesSummary?.map((workspace) => (
                         <li key={workspace.id}>
-                          <Link to={`/workspaces/${workspace.id}`}>{workspace.name}</Link>
+                          {/* Clicking on the workspace will not close the dropdown by default. Adding 
+                              on click handler to remove open attribute from details tag will. */}
+                          <Link
+                            onClick={(e) => {
+                              e.currentTarget.closest('details')?.removeAttribute('open');
+                            }}
+                            to={`/workspaces/${workspace.id}`}
+                          >
+                            {workspace.name}
+                          </Link>
                         </li>
                       ))
                     )}

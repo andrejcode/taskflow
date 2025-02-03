@@ -4,17 +4,19 @@ import Workspace, { IWorkspace } from '@/models/Workspace';
 import {
   mapWorkspaceSummaryToDto,
   mapWorkspaceToDto,
+  mapWorkspaceToDtoWithUserPopulated,
 } from '@/services/workspaceService';
 import { WorkspaceDto, WorkspaceSummaryDto } from '@/shared/dtos';
 import { nameSchema } from '@/shared/schemas';
 import { isValidObjectId } from '@/utils/mongo';
+import { IUserRole, IUserRolePopulated } from '@/models/User';
 
 export async function getWorkspacesSummaryByUser(req: Request, res: Response) {
   const { userId } = req;
 
   try {
     const workspaces = await Workspace.find({
-      'users.userId': userId,
+      'users.user': userId,
     }).select('name createdAt updatedAt');
 
     if (!workspaces || workspaces.length === 0) {
@@ -42,15 +44,17 @@ export async function getWorkspacesById(req: Request, res: Response) {
       return;
     }
 
-    const workspace: IWorkspace | null = await Workspace.findById(workspaceId);
+    const workspace: IWorkspace | null = await Workspace.findById(
+      workspaceId
+    ).populate<{ users: IUserRolePopulated[] }>('users.user', '-password');
 
     if (!workspace) {
       res.status(404).send('Workspace not found.');
       return;
     }
 
-    const user = workspace?.users.find(
-      (user) => user.userId.toString() === userId
+    const user = workspace.users.find(
+      (populatedUser) => populatedUser.user?._id.toString() === userId
     );
 
     if (!user) {
@@ -60,7 +64,8 @@ export async function getWorkspacesById(req: Request, res: Response) {
       return;
     }
 
-    const workspaceDto: WorkspaceDto = mapWorkspaceToDto(workspace);
+    const workspaceDto: WorkspaceDto =
+      mapWorkspaceToDtoWithUserPopulated(workspace);
     res.json(workspaceDto);
   } catch {
     res.status(500).send('Internal server error.');
@@ -75,7 +80,7 @@ export async function createWorkspace(req: Request, res: Response) {
 
     const workspace = await Workspace.create({
       name,
-      users: [{ userId, role: 'admin' }],
+      users: [{ user: userId, role: 'admin' }],
     });
 
     const workspaceDto: WorkspaceDto = mapWorkspaceToDto(workspace);
@@ -108,8 +113,10 @@ export async function deleteWorkspace(req: Request, res: Response) {
     }
 
     // Check if the workspace has the user as an admin
-    const user = workspace?.users.find(
-      (user) => user.userId.toString() === userId && user.role === 'admin'
+    const user = workspace.users.find(
+      (foundUser) =>
+        (foundUser as IUserRole).user.toString() === userId &&
+        foundUser.role === 'admin'
     );
 
     if (!user) {

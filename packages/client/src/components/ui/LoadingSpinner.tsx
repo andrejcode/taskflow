@@ -12,5 +12,10 @@ export default function LoadingSpinner({ size = 'lg' }: LoadingSpinnerProps) {
     lg: 'loading-lg',
   };
 
-  return <span className={clsx('loading loading-spinner', sizeVariants[size])} />;
+  return (
+    <span
+      data-testid="loading-spinner"
+      className={clsx('loading loading-spinner', sizeVariants[size])}
+    />
+  );
 }

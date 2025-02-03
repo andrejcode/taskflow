@@ -5,11 +5,11 @@ import Modal from '@/components/ui/Modal';
 import FormControl from '@/components/ui/FormControl';
 import useToastContext from '@/hooks/useToastContext';
 import useWorkspacesSummaryContext from '@/hooks/useWorkspaceSummaryContext';
-import { getUserToken } from '@/utils/auth';
 import { closeModal } from '@/utils/modal';
 import { CREATE_WORKSPACE_MODAL } from '@/utils/constants';
 import { nameSchema } from '@server/shared/schemas';
 import { WorkspaceDto } from '@server/shared/dtos';
+import useUserContext from '@/hooks/useUserContext';
 
 const FORM_ID = 'create-workspace-form';
 
@@ -17,8 +17,11 @@ export default function CreateWorkspaceModal() {
   const [workspaceName, setWorkspaceName] = useState<string>('');
   const [workspaceError, setWorkspaceError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const { token } = useUserContext();
   const { addToast } = useToastContext();
   const { addWorkspaceSummary } = useWorkspacesSummaryContext();
+
   const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,8 +30,6 @@ export default function CreateWorkspaceModal() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    const token = getUserToken();
 
     if (!token) {
       addToast('You are not authenticated.', 'error');
@@ -63,7 +64,7 @@ export default function CreateWorkspaceModal() {
           createdAt: workspace.createdAt,
         });
 
-        void navigate(`/workspaces/${workspace.id}`);
+        void navigate(`/workspaces/${workspace.id}`, { state: { workspace } });
       } else {
         addToast('Unable to create the workspace.', 'error');
       }

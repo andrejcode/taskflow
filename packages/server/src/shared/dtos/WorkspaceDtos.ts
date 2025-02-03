@@ -1,4 +1,9 @@
-import { BoardDto, TextChannelDto, UserRoleDto } from './index';
+import {
+  BoardDto,
+  UserRoleDtoPopulated,
+  TextChannelDto,
+  UserRoleDto,
+} from './index';
 
 export class WorkspaceSummaryDto {
   id: string;
@@ -17,7 +22,7 @@ export class WorkspaceSummaryDto {
 export class WorkspaceDto {
   id: string;
   name: string;
-  users: UserRoleDto[];
+  users: UserRoleDto[] | UserRoleDtoPopulated[];
   boards: BoardDto[];
   textChannels: TextChannelDto[];
   createdAt: Date;
@@ -26,7 +31,7 @@ export class WorkspaceDto {
   constructor(
     id: string,
     name: string,
-    users: UserRoleDto[],
+    users: UserRoleDto[] | UserRoleDtoPopulated[],
     boards: BoardDto[],
     textChannels: TextChannelDto[],
     createdAt: Date,

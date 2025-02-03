@@ -11,7 +11,7 @@ export async function getUser(req: Request, res: Response) {
   const { userId } = req;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('-password');
 
     if (!user) {
       res.status(404).send('User not found.');

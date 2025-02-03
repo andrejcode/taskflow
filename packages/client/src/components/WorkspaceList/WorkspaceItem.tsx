@@ -18,7 +18,7 @@ export default function WorkspaceItem({ title, variant = 'primary', onClick }: W
       onClick={onClick}
     >
       <div className="card-body flex items-center justify-center">
-        <h2 className="card-title">{title}</h2>
+        <h2 className="card-title w-full truncate">{title}</h2>
       </div>
     </li>
   );

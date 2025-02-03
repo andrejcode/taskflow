@@ -14,21 +14,24 @@ vi.mock('@/hooks/useUserContext');
 
 beforeEach(() => {
   vi.resetAllMocks();
+
+  // We are setting the theme because window object is not available in JSDOM
+  localStorage.setItem('theme', 'light');
 });
 
 describe('Header', () => {
   it('renders correctly without user', () => {
     const mockUseUserContext: UserContextType = {
+      token: null,
       user: null,
       isLoading: false,
+      saveToken: vi.fn(),
+      removeToken: vi.fn(),
       saveUser: vi.fn(),
       removeUser: vi.fn(),
     };
 
     vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
-
-    // We are setting the theme because window object is not available in JSDOM
-    localStorage.setItem('theme', 'light');
 
     render(
       <Router>
@@ -57,16 +60,16 @@ describe('Header', () => {
     };
 
     const mockUseUserContext: UserContextType = {
+      token: '',
       user: mockUser,
       isLoading: false,
+      saveToken: vi.fn(),
+      removeToken: vi.fn(),
       saveUser: vi.fn(),
       removeUser: vi.fn(),
     };
 
     vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
-
-    // We are setting the theme because window object is not available in JSDOM
-    localStorage.setItem('theme', 'light');
 
     render(
       <Router>
