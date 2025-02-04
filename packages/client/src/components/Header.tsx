@@ -4,12 +4,12 @@ import Avatar from './ui/Avatar';
 import Dropdown from './ui/Dropdown';
 import LoadingSpinner from './ui/LoadingSpinner';
 import useUserContext from '@/hooks/useUserContext';
-import useWorkspacesSummaryContext from '@/hooks/useWorkspaceSummaryContext';
+import useWorkspaceSummaryContext from '@/hooks/useWorkspaceSummaryContext';
 import { openModal } from '@/utils/modal';
 
 export default function Header() {
   const { user, isLoading: isUserLoading, removeUser, removeToken } = useUserContext();
-  const { isLoading: isWorkspacesLoading, workspacesSummary } = useWorkspacesSummaryContext();
+  const { isLoading: isWorkspacesSummaryLoading, workspacesSummary } = useWorkspaceSummaryContext();
 
   const handleLogout = () => {
     removeUser();
@@ -46,7 +46,7 @@ export default function Header() {
                 <li>
                   <Link to="/workspaces">Workspaces</Link>
                   <ul className="p-2">
-                    {isWorkspacesLoading ? (
+                    {isWorkspacesSummaryLoading ? (
                       <li>
                         <LoadingSpinner size="xs" />
                       </li>
@@ -76,8 +76,8 @@ export default function Header() {
               <li>
                 <details>
                   <summary>Workspaces</summary>
-                  <ul className="z-[1] bg-base-100 p-2">
-                    {isWorkspacesLoading ? (
+                  <ul data-testid="workspaces-summary-dropdown" className="z-[1] bg-base-100 p-2">
+                    {isWorkspacesSummaryLoading ? (
                       <li>
                         <LoadingSpinner size="xs" />
                       </li>
@@ -107,6 +107,7 @@ export default function Header() {
             </ul>
 
             <button
+              data-testid="create-workspace-button"
               className="btn btn-circle btn-primary btn-sm"
               onClick={() => openModal('create-workspace-modal')}
             >

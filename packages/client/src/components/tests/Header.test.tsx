@@ -1,25 +1,47 @@
-import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { BrowserRouter as Router } from 'react-router';
 import Header from '../Header';
 import UserProvider from '@/providers/UserProvider';
 import WorkspaceSummaryProvider from '@/providers/WorkspaceSummaryProvider';
 import ToastProvider from '@/providers/ToastProvider';
-import { type UserDto } from '@server/shared/dtos';
-import { BrowserRouter as Router } from 'react-router';
 import ThemeProvider from '@/providers/ThemeProvider';
 import useUserContext from '@/hooks/useUserContext';
-import { UserContextType } from '@/contexts/UserContext';
+import useWorkspaceSummaryContext from '@/hooks/useWorkspaceSummaryContext';
+import { type WorkspaceSummaryContextType } from '@/contexts/WorkspaceSummaryContext';
+import { type UserContextType } from '@/contexts/UserContext';
+import { type UserDto } from '@server/shared/dtos';
+import { CREATE_WORKSPACE_MODAL } from '@/utils/constants';
+import { openModal } from '@/utils/modal';
 
 vi.mock('@/hooks/useUserContext');
+vi.mock('@/hooks/useWorkspaceSummaryContext');
+vi.mock('@/utils/modal', () => ({
+  openModal: vi.fn(),
+}));
 
-beforeEach(() => {
-  vi.resetAllMocks();
-
-  // We are setting the theme because window object is not available in JSDOM
-  localStorage.setItem('theme', 'light');
-});
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Router>
+      <ToastProvider>
+        <UserProvider>
+          <WorkspaceSummaryProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </WorkspaceSummaryProvider>
+        </UserProvider>
+      </ToastProvider>
+    </Router>
+  );
+};
 
 describe('Header', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+
+    // We are setting the theme because window object is not available in JSDOM
+    localStorage.setItem('theme', 'light');
+  });
+
   it('renders correctly without user', () => {
     const mockUseUserContext: UserContextType = {
       token: null,
@@ -31,26 +53,22 @@ describe('Header', () => {
       removeUser: vi.fn(),
     };
 
-    vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
+    const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
+      workspacesSummary: [],
+      isLoading: false,
+      addWorkspaceSummary: vi.fn(),
+      removeWorkspaceSummary: vi.fn(),
+    };
 
-    render(
-      <Router>
-        <ToastProvider>
-          <UserProvider>
-            <WorkspaceSummaryProvider>
-              <ThemeProvider>
-                <Header />
-              </ThemeProvider>
-            </WorkspaceSummaryProvider>
-          </UserProvider>
-        </ToastProvider>
-      </Router>
-    );
+    vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
+    vi.mocked(useWorkspaceSummaryContext).mockReturnValue(mockUseWorkspaceSummaryContext);
+
+    render(<Header />, { wrapper: TestWrapper });
 
     expect(screen.getByText('Login')).toBeInTheDocument();
   });
 
-  it('renders correctly with user', () => {
+  it('renders correctly with user and workspaces', () => {
     const mockUser: UserDto = {
       id: '1',
       name: 'John Doe',
@@ -69,22 +87,71 @@ describe('Header', () => {
       removeUser: vi.fn(),
     };
 
-    vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
+    const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
+      workspacesSummary: [
+        {
+          id: '1',
+          name: 'Workspace 1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      isLoading: false,
+      addWorkspaceSummary: vi.fn(),
+      removeWorkspaceSummary: vi.fn(),
+    };
 
-    render(
-      <Router>
-        <ToastProvider>
-          <UserProvider>
-            <WorkspaceSummaryProvider>
-              <ThemeProvider>
-                <Header />
-              </ThemeProvider>
-            </WorkspaceSummaryProvider>
-          </UserProvider>
-        </ToastProvider>
-      </Router>
-    );
+    vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
+    vi.mocked(useWorkspaceSummaryContext).mockReturnValue(mockUseWorkspaceSummaryContext);
+
+    render(<Header />, { wrapper: TestWrapper });
 
     expect(screen.getByText('JD')).toBeInTheDocument();
+
+    const workspaceDropdown = screen.getByTestId('workspaces-summary-dropdown');
+    expect(within(workspaceDropdown).getByText('Workspace 1')).toBeInTheDocument();
+  });
+
+  it('opens create workspace modal when button is clicked', () => {
+    const mockUser: UserDto = {
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const mockUseUserContext: UserContextType = {
+      token: '',
+      user: mockUser,
+      isLoading: false,
+      saveToken: vi.fn(),
+      removeToken: vi.fn(),
+      saveUser: vi.fn(),
+      removeUser: vi.fn(),
+    };
+
+    const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
+      workspacesSummary: [
+        {
+          id: '1',
+          name: 'Workspace 1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      isLoading: false,
+      addWorkspaceSummary: vi.fn(),
+      removeWorkspaceSummary: vi.fn(),
+    };
+
+    vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
+    vi.mocked(useWorkspaceSummaryContext).mockReturnValue(mockUseWorkspaceSummaryContext);
+
+    render(<Header />, { wrapper: TestWrapper });
+
+    const createWorkspaceButton = screen.getByTestId('create-workspace-button');
+    fireEvent.click(createWorkspaceButton);
+    expect(openModal).toHaveBeenCalledWith(CREATE_WORKSPACE_MODAL);
   });
 });

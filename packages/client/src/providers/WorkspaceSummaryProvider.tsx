@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import WorkspacesSummaryContext from '@/contexts/WorkspacesSummaryContext.ts';
+import WorkspaceSummaryContext from '@/contexts/WorkspaceSummaryContext';
 import { WorkspaceSummaryDto } from '@server/shared/dtos';
 import useToastContext from '@/hooks/useToastContext';
 import useUserContext from '@/hooks/useUserContext';
@@ -72,10 +72,15 @@ export default function WorkspaceSummaryProvider({ children }: { children: React
   };
 
   return (
-    <WorkspacesSummaryContext.Provider
-      value={{ workspacesSummary, addWorkspaceSummary, removeWorkspaceSummary, isLoading }}
+    <WorkspaceSummaryContext.Provider
+      value={{
+        isLoading,
+        workspacesSummary,
+        addWorkspaceSummary,
+        removeWorkspaceSummary,
+      }}
     >
       {children}
-    </WorkspacesSummaryContext.Provider>
+    </WorkspaceSummaryContext.Provider>
   );
 }

@@ -1,13 +1,13 @@
 import { WorkspaceSummaryDto } from '@server/shared/dtos';
 import { createContext } from 'react';
 
-export interface WorkspacesSummaryContextType {
+export interface WorkspaceSummaryContextType {
+  isLoading: boolean;
   workspacesSummary: WorkspaceSummaryDto[] | null;
   addWorkspaceSummary: (workspaceSummary: WorkspaceSummaryDto) => void;
   removeWorkspaceSummary: (workspaceId: string) => void;
-  isLoading: boolean;
 }
 
-const WorkspacesSummaryContext = createContext<WorkspacesSummaryContextType | null>(null);
+const WorkspacesSummaryContext = createContext<WorkspaceSummaryContextType | null>(null);
 
 export default WorkspacesSummaryContext;

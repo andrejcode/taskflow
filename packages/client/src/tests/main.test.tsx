@@ -9,14 +9,14 @@ import WorkspaceSummaryProvider from '@/providers/WorkspaceSummaryProvider';
 import UserProvider from '@/providers/UserProvider';
 import ThemeProvider from '@/providers/ThemeProvider';
 
-const renderWithProviders = (ui: React.ReactNode) => {
-  return render(
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  return (
     <ThemeProvider>
       <ToastProvider>
         <MemoryRouter initialEntries={['/']}>
           <UserProvider>
             <WorkspaceSummaryProvider>
-              <Routes>{ui}</Routes>
+              <Routes>{children}</Routes>
             </WorkspaceSummaryProvider>
           </UserProvider>
         </MemoryRouter>
@@ -25,22 +25,23 @@ const renderWithProviders = (ui: React.ReactNode) => {
   );
 };
 
-beforeAll(() => {
-  localStorage.setItem('theme', 'light');
-});
-
 describe('main', () => {
+  beforeAll(() => {
+    localStorage.setItem('theme', 'light');
+  });
+
   it('renders root component', () => {
-    renderWithProviders(
+    render(
       <Route element={<RootLayout />}>
         <Route index element={<Home />} />
-      </Route>
+      </Route>,
+      { wrapper: TestWrapper }
     );
     expect(screen.getByText('Organize. Collaborate. Succeed.')).toBeInTheDocument();
   });
 
   it('renders not found page for invalid route', () => {
-    renderWithProviders(<Route path="*" element={<NotFound />} />);
+    render(<Route path="*" element={<NotFound />} />, { wrapper: TestWrapper });
     expect(screen.getByText('Page not found')).toBeInTheDocument();
   });
 });

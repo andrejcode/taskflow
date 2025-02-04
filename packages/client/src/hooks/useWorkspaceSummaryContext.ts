@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import WorkspacesSummaryContext from '@/contexts/WorkspacesSummaryContext';
+import WorkspaceSummaryContext from '@/contexts/WorkspaceSummaryContext';
 
 export default function useWorkspaceSummaryContext() {
-  const context = useContext(WorkspacesSummaryContext);
+  const context = useContext(WorkspaceSummaryContext);
 
   if (!context) {
     throw new Error('useWorkspaceSummaryContext must be used within a WorkspaceSummaryProvider');
