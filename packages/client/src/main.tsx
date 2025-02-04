@@ -9,6 +9,7 @@ import Signup from './pages/Signup.tsx';
 import Workspaces from './pages/Workspaces.tsx';
 import Workspace from './pages/Workspace.tsx';
 import NotFound from './pages/NotFound.tsx';
+import Profile from './pages/Profile.tsx';
 import UserProvider from './providers/UserProvider.tsx';
 import ThemeProvider from './providers/ThemeProvider.tsx';
 import WorkspaceSummaryProvider from './providers/WorkspaceSummaryProvider.tsx';
@@ -33,6 +34,7 @@ createRoot(document.getElementById('root')!).render(
                       <Route path=":workspaceId" element={<Workspace />} />
                     </Route>
                   </Route>
+                  <Route path="profile" element={<Profile />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
