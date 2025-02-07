@@ -5,13 +5,13 @@ import FormControl from './ui/FormControl';
 import Alert from './ui/Alert';
 
 export default function AuthForm({ isLogin }: { isLogin: boolean }) {
-  const { formData, formErrors, isLoading, error, handleChange, handleSubmit } =
+  const { formData, formErrors, isLoading, errorMessage, handleChange, handleSubmit } =
     useAuthForm(isLogin);
 
   return (
     <div className="flex h-full items-center justify-center">
       <div className="card w-full max-w-sm shrink-0 bg-base-200 shadow-2xl">
-        {error && <Alert message={error} variant="error" />}
+        {errorMessage && <Alert message={errorMessage} variant="error" />}
 
         <form className="card-body" onSubmit={(event) => void handleSubmit(event)}>
           {!isLogin && (
@@ -22,6 +22,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
               placeholder="name"
               fieldValue={(formData as SignupFormData).name}
               fieldError={formErrors.name}
+              isDisabled={isLoading}
               onChange={handleChange}
             />
           )}
@@ -33,6 +34,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
             placeholder="email"
             fieldValue={formData.email}
             fieldError={formErrors.email}
+            isDisabled={isLoading}
             onChange={handleChange}
           />
 
@@ -43,6 +45,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
             placeholder="password"
             fieldValue={formData.password}
             fieldError={formErrors.password}
+            isDisabled={isLoading}
             onChange={handleChange}
           />
 
@@ -54,6 +57,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
               placeholder="confirm password"
               fieldValue={(formData as SignupFormData).confirmPassword}
               fieldError={formErrors.confirmPassword}
+              isDisabled={isLoading}
               onChange={handleChange}
             />
           )}

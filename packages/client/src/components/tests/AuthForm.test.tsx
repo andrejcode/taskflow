@@ -11,7 +11,7 @@ describe('AuthForm', () => {
     formData: { email: '', password: '', name: '', confirmPassword: '' },
     formErrors: {},
     isLoading: false,
-    error: null as string | null,
+    errorMessage: '',
     handleChange: vi.fn(),
     handleSubmit: vi.fn(),
   };
@@ -61,7 +61,7 @@ describe('AuthForm', () => {
   });
 
   it('displays error message when error is present', () => {
-    mockUseAuthForm.error = 'Test error';
+    mockUseAuthForm.errorMessage = 'Test error';
     render(
       <Router>
         <AuthForm isLogin={true} />

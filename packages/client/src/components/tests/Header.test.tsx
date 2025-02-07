@@ -56,6 +56,7 @@ describe('Header', () => {
     const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
       workspacesSummary: [],
       isLoading: false,
+      errorMessage: '',
       addWorkspaceSummary: vi.fn(),
       removeWorkspaceSummary: vi.fn(),
     };
@@ -96,6 +97,7 @@ describe('Header', () => {
           updatedAt: new Date(),
         },
       ],
+      errorMessage: '',
       isLoading: false,
       addWorkspaceSummary: vi.fn(),
       removeWorkspaceSummary: vi.fn(),
@@ -140,6 +142,7 @@ describe('Header', () => {
           updatedAt: new Date(),
         },
       ],
+      errorMessage: '',
       isLoading: false,
       addWorkspaceSummary: vi.fn(),
       removeWorkspaceSummary: vi.fn(),

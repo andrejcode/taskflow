@@ -6,6 +6,7 @@ interface FormGroupProps {
   fieldValue: string;
   fieldError: string | undefined;
   isRequired?: boolean;
+  isDisabled?: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -17,6 +18,7 @@ export default function FormControl({
   fieldValue,
   fieldError,
   isRequired = true,
+  isDisabled = false,
   onChange,
 }: FormGroupProps) {
   return (
@@ -33,6 +35,7 @@ export default function FormControl({
         placeholder={placeholder}
         className="input input-bordered"
         required={isRequired}
+        disabled={isDisabled}
       />
       {fieldError && <span className="mt-1 text-sm text-error">{fieldError}</span>}
     </div>

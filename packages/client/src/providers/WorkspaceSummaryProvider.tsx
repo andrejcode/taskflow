@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import WorkspaceSummaryContext from '@/contexts/WorkspaceSummaryContext';
 import { WorkspaceSummaryDto } from '@server/shared/dtos';
-import useToastContext from '@/hooks/useToastContext';
 import useUserContext from '@/hooks/useUserContext';
 
 export default function WorkspaceSummaryProvider({ children }: { children: React.ReactNode }) {
   const [workspacesSummary, setWorkspacesSummary] = useState<WorkspaceSummaryDto[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const { addToast } = useToastContext();
   const { token } = useUserContext();
 
   useEffect(() => {
@@ -37,9 +36,9 @@ export default function WorkspaceSummaryProvider({ children }: { children: React
         }
       } catch (error) {
         if (error instanceof Error) {
-          addToast(error.message, 'error');
+          setErrorMessage(error.message);
         } else {
-          addToast('An unexpected error occurred while getting workspaces.', 'error');
+          setErrorMessage('An unexpected error occurred while getting workspaces.');
         }
       } finally {
         setIsLoading(false);
@@ -47,7 +46,7 @@ export default function WorkspaceSummaryProvider({ children }: { children: React
     };
 
     void fetchWorkspacesSummary();
-  }, [addToast, token]);
+  }, [setErrorMessage, token]);
 
   const addWorkspaceSummary = (workspaceSummary: WorkspaceSummaryDto) => {
     setWorkspacesSummary((prevWorkspacesSummary) => {
@@ -74,6 +73,7 @@ export default function WorkspaceSummaryProvider({ children }: { children: React
   return (
     <WorkspaceSummaryContext.Provider
       value={{
+        errorMessage,
         isLoading,
         workspacesSummary,
         addWorkspaceSummary,

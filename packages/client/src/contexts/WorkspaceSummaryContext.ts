@@ -2,6 +2,7 @@ import { WorkspaceSummaryDto } from '@server/shared/dtos';
 import { createContext } from 'react';
 
 export interface WorkspaceSummaryContextType {
+  errorMessage: string;
   isLoading: boolean;
   workspacesSummary: WorkspaceSummaryDto[] | null;
   addWorkspaceSummary: (workspaceSummary: WorkspaceSummaryDto) => void;

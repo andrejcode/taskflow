@@ -22,21 +22,21 @@ export default function useAuthForm(isLogin: boolean) {
   );
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const { saveUser, saveToken } = useUserContext();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setFormErrors((prevErrors) => ({ ...prevErrors, [name]: null }));
+    setFormErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setIsLoading(true);
-    setError(null);
+    setErrorMessage('');
 
     try {
       if (isLogin) {
@@ -53,7 +53,7 @@ export default function useAuthForm(isLogin: boolean) {
       });
 
       if (response.ok) {
-        setError(null);
+        setErrorMessage('');
 
         const { token, user } = (await response.json()) as { token: string; user: UserDto };
 
@@ -61,7 +61,7 @@ export default function useAuthForm(isLogin: boolean) {
         saveUser(user);
       } else {
         const responseText = await response.text();
-        setError(responseText);
+        setErrorMessage(responseText);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -72,12 +72,12 @@ export default function useAuthForm(isLogin: boolean) {
 
         setFormErrors(errorMap);
       } else {
-        setError('Something went wrong. Please try again.');
+        setErrorMessage('Something went wrong. Please try again.');
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { formData, formErrors, isLoading, error, handleChange, handleSubmit };
+  return { formData, formErrors, isLoading, errorMessage, handleChange, handleSubmit };
 }
