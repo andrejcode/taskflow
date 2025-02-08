@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 
-interface WorkspaceItemProps {
+interface ListItemProps {
   title: string;
   variant?: 'primary' | 'secondary';
   onClick: () => void;
 }
 
-export default function WorkspaceItem({ title, variant = 'primary', onClick }: WorkspaceItemProps) {
+export default function ListItem({ title, variant = 'primary', onClick }: ListItemProps) {
   return (
     <li
       className={clsx(
@@ -17,8 +17,8 @@ export default function WorkspaceItem({ title, variant = 'primary', onClick }: W
       )}
       onClick={onClick}
     >
-      <div className="card-body flex items-center justify-center">
-        <h2 className="card-title w-full truncate">{title}</h2>
+      <div className="card-body">
+        <h2 className="card-title truncate">{title}</h2>
       </div>
     </li>
   );

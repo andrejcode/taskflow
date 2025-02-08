@@ -16,7 +16,7 @@ export default function Alert({ message, variant = 'info' }: AlertProps) {
 
   return (
     <>
-      <div role="alert" className={clsx('alert', alertClasses[variant])}>
+      <div role="alert" data-testid="alert" className={clsx('alert', alertClasses[variant])}>
         <span>{message}</span>
       </div>
     </>

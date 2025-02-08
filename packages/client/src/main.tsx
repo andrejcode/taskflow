@@ -14,6 +14,7 @@ import UserProvider from './providers/UserProvider.tsx';
 import ThemeProvider from './providers/ThemeProvider.tsx';
 import WorkspaceSummaryProvider from './providers/WorkspaceSummaryProvider.tsx';
 import ToastProvider from './providers/ToastProvider.tsx';
+import ProtectedRoute from './components/ProtectedRoute.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -29,12 +30,32 @@ createRoot(document.getElementById('root')!).render(
                   <Route path="login" element={<Login />} />
                   <Route path="signup" element={<Signup />} />
                   <Route path="workspaces">
-                    <Route index element={<Workspaces />} />
-                    <Route element={<WorkspaceLayout />}>
+                    <Route
+                      index
+                      element={
+                        <ProtectedRoute>
+                          <Workspaces />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      element={
+                        <ProtectedRoute>
+                          <WorkspaceLayout />
+                        </ProtectedRoute>
+                      }
+                    >
                       <Route path=":workspaceId" element={<Workspace />} />
                     </Route>
                   </Route>
-                  <Route path="profile" element={<Profile />} />
+                  <Route
+                    path="profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
