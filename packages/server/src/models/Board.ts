@@ -1,18 +1,23 @@
-import { Schema, Types } from 'mongoose';
-import { IList, listSchema } from './List';
+import { Schema, model, Types } from 'mongoose';
 
 export interface IBoard {
   _id: Types.ObjectId;
+  workspace: Types.ObjectId;
   title: string;
-  lists: IList[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 export const boardSchema = new Schema<IBoard>(
   {
+    workspace: {
+      type: Schema.Types.ObjectId,
+      ref: 'Workspace',
+      required: true,
+    },
     title: { type: String, required: true },
-    lists: { type: [listSchema], default: [] },
   },
   { timestamps: true }
 );
+
+export default model<IBoard>('Board', boardSchema);

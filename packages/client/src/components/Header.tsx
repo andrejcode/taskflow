@@ -4,12 +4,12 @@ import Avatar from './ui/Avatar';
 import Dropdown from './ui/Dropdown';
 import LoadingSpinner from './ui/LoadingSpinner';
 import useUserContext from '@/hooks/useUserContext';
-import useWorkspaceSummaryContext from '@/hooks/useWorkspaceSummaryContext';
+import useWorkspaceContext from '@/hooks/useWorkspaceContext';
 import { openModal } from '@/utils/modal';
 
 export default function Header() {
   const { user, isLoading: isUserLoading, removeUser, removeToken } = useUserContext();
-  const { isLoading: isWorkspacesSummaryLoading, workspacesSummary } = useWorkspaceSummaryContext();
+  const { isLoading: isWorkspacesSummaryLoading, workspaces } = useWorkspaceContext();
 
   const handleLogout = () => {
     removeUser();
@@ -50,10 +50,10 @@ export default function Header() {
                       <li>
                         <LoadingSpinner size="xs" />
                       </li>
-                    ) : !workspacesSummary || workspacesSummary.length === 0 ? (
+                    ) : !workspaces || workspaces.length === 0 ? (
                       <li>No workspaces</li>
                     ) : (
-                      workspacesSummary?.map((workspace) => (
+                      workspaces?.map((workspace) => (
                         <li key={workspace.id}>
                           <Link to={`/workspaces/${workspace.id}`}>{workspace.name}</Link>
                         </li>
@@ -81,12 +81,12 @@ export default function Header() {
                       <li>
                         <LoadingSpinner size="xs" />
                       </li>
-                    ) : !workspacesSummary || workspacesSummary.length === 0 ? (
+                    ) : !workspaces || workspaces.length === 0 ? (
                       <li className="w-36">
                         <span>No workspaces</span>
                       </li>
                     ) : (
-                      workspacesSummary?.map((workspace) => (
+                      workspaces?.map((workspace) => (
                         <li key={workspace.id}>
                           {/* Clicking on the workspace will not close the dropdown by default. Adding 
                               on click handler to remove open attribute from details tag will. */}

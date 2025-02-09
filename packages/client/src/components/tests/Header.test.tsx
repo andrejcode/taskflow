@@ -3,19 +3,19 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router';
 import Header from '../Header';
 import UserProvider from '@/providers/UserProvider';
-import WorkspaceSummaryProvider from '@/providers/WorkspaceSummaryProvider';
+import WorkspaceProvider from '@/providers/WorkspaceProvider';
 import ToastProvider from '@/providers/ToastProvider';
 import ThemeProvider from '@/providers/ThemeProvider';
 import useUserContext from '@/hooks/useUserContext';
-import useWorkspaceSummaryContext from '@/hooks/useWorkspaceSummaryContext';
-import { type WorkspaceSummaryContextType } from '@/contexts/WorkspaceSummaryContext';
+import useWorkspaceContext from '@/hooks/useWorkspaceContext';
+import { type WorkspaceContextType } from '@/contexts/WorkspacesContext';
 import { type UserContextType } from '@/contexts/UserContext';
 import { type UserDto } from '@server/shared/dtos';
 import { CREATE_WORKSPACE_MODAL } from '@/utils/constants';
 import { openModal } from '@/utils/modal';
 
 vi.mock('@/hooks/useUserContext');
-vi.mock('@/hooks/useWorkspaceSummaryContext');
+vi.mock('@/hooks/useWorkspaceContext');
 vi.mock('@/utils/modal', () => ({
   openModal: vi.fn(),
 }));
@@ -25,9 +25,9 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
     <Router>
       <ToastProvider>
         <UserProvider>
-          <WorkspaceSummaryProvider>
+          <WorkspaceProvider>
             <ThemeProvider>{children}</ThemeProvider>
-          </WorkspaceSummaryProvider>
+          </WorkspaceProvider>
         </UserProvider>
       </ToastProvider>
     </Router>
@@ -53,16 +53,16 @@ describe('Header', () => {
       removeUser: vi.fn(),
     };
 
-    const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
-      workspacesSummary: [],
+    const mockUseWorkspaceContext: WorkspaceContextType = {
+      workspaces: [],
       isLoading: false,
       errorMessage: '',
-      addWorkspaceSummary: vi.fn(),
-      removeWorkspaceSummary: vi.fn(),
+      addWorkspace: vi.fn(),
+      removeWorkspace: vi.fn(),
     };
 
     vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
-    vi.mocked(useWorkspaceSummaryContext).mockReturnValue(mockUseWorkspaceSummaryContext);
+    vi.mocked(useWorkspaceContext).mockReturnValue(mockUseWorkspaceContext);
 
     render(<Header />, { wrapper: TestWrapper });
 
@@ -88,8 +88,8 @@ describe('Header', () => {
       removeUser: vi.fn(),
     };
 
-    const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
-      workspacesSummary: [
+    const mockUseWorkspaceContext: WorkspaceContextType = {
+      workspaces: [
         {
           id: '1',
           name: 'Workspace 1',
@@ -99,12 +99,12 @@ describe('Header', () => {
       ],
       errorMessage: '',
       isLoading: false,
-      addWorkspaceSummary: vi.fn(),
-      removeWorkspaceSummary: vi.fn(),
+      addWorkspace: vi.fn(),
+      removeWorkspace: vi.fn(),
     };
 
     vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
-    vi.mocked(useWorkspaceSummaryContext).mockReturnValue(mockUseWorkspaceSummaryContext);
+    vi.mocked(useWorkspaceContext).mockReturnValue(mockUseWorkspaceContext);
 
     render(<Header />, { wrapper: TestWrapper });
 
@@ -133,8 +133,8 @@ describe('Header', () => {
       removeUser: vi.fn(),
     };
 
-    const mockUseWorkspaceSummaryContext: WorkspaceSummaryContextType = {
-      workspacesSummary: [
+    const mockUseWorkspaceContext: WorkspaceContextType = {
+      workspaces: [
         {
           id: '1',
           name: 'Workspace 1',
@@ -144,12 +144,12 @@ describe('Header', () => {
       ],
       errorMessage: '',
       isLoading: false,
-      addWorkspaceSummary: vi.fn(),
-      removeWorkspaceSummary: vi.fn(),
+      addWorkspace: vi.fn(),
+      removeWorkspace: vi.fn(),
     };
 
     vi.mocked(useUserContext).mockReturnValue(mockUseUserContext);
-    vi.mocked(useWorkspaceSummaryContext).mockReturnValue(mockUseWorkspaceSummaryContext);
+    vi.mocked(useWorkspaceContext).mockReturnValue(mockUseWorkspaceContext);
 
     render(<Header />, { wrapper: TestWrapper });
 

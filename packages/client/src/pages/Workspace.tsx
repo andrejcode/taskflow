@@ -12,21 +12,14 @@ export default function Workspace() {
   const { user } = useUserContext();
 
   const isUserAdmin = () => {
-    const userRole = workspace.users.find((userFound) =>
-      typeof userFound.user === 'string'
-        ? userFound.user === user!.id
-        : userFound.user.id === user!.id
-    );
-    return userRole?.role === 'admin';
+    const member = workspace.members.find((member) => member.user === user!.id);
+    return member?.role === 'admin';
   };
 
   return (
     <>
-      <h2 className="my-2 text-lg">Boards {workspace.boards.length}</h2>
-      {/* TODO: Add boards content here */}
-
-      <h2 className="mb-2 text-lg">Text Channels {workspace.textChannels.length}</h2>
-      {/* TODO: Add text channels here */}
+      <h2 className="mb-1 mt-2 text-lg">Recent Activity</h2>
+      <p className="mb-2 text-sm">There is no recent activity.</p>
 
       {isUserAdmin() && <WorkspaceSettings workspace={workspace} />}
     </>

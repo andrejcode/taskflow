@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import Modal from '@/components/ui/Modal';
 import FormControl from '@/components/ui/FormControl';
 import useToastContext from '@/hooks/useToastContext';
-import useWorkspaceSummaryContext from '@/hooks/useWorkspaceSummaryContext';
+import useWorkspaceContext from '@/hooks/useWorkspaceContext';
 import { closeModal } from '@/utils/modal';
 import { CREATE_WORKSPACE_MODAL } from '@/utils/constants';
 import { nameSchema } from '@server/shared/schemas';
@@ -20,7 +20,7 @@ export default function CreateWorkspaceModal() {
 
   const { token } = useUserContext();
   const { addToast } = useToastContext();
-  const { addWorkspaceSummary } = useWorkspaceSummaryContext();
+  const { addWorkspace } = useWorkspaceContext();
 
   const navigate = useNavigate();
 
@@ -57,7 +57,7 @@ export default function CreateWorkspaceModal() {
         closeModal(CREATE_WORKSPACE_MODAL);
 
         const workspace = (await response.json()) as WorkspaceDto;
-        addWorkspaceSummary({
+        addWorkspace({
           id: workspace.id,
           name: workspace.name,
           updatedAt: workspace.updatedAt,

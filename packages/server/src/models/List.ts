@@ -1,18 +1,19 @@
-import { Schema, Types } from 'mongoose';
-import { ITask, taskSchema } from './Task';
+import { Schema, model, Types } from 'mongoose';
 
 export interface IList {
   _id: Types.ObjectId;
+  board: Types.ObjectId;
   title: string;
-  tasks: ITask[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 export const listSchema = new Schema<IList>(
   {
+    board: { type: Schema.Types.ObjectId, ref: 'Board', required: true },
     title: { type: String, required: true },
-    tasks: { type: [taskSchema], default: [] },
   },
   { timestamps: true }
 );
+
+export default model<IList>('List', listSchema);

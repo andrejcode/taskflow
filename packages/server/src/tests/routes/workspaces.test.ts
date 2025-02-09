@@ -3,6 +3,7 @@ import { connectDB, disconnectDB } from '@/database';
 import User from '@/models/User';
 import Workspace from '@/models/Workspace';
 import { hashPassword, jwtSign } from '@/utils/auth';
+import { Types } from 'mongoose';
 import supertest from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -46,10 +47,10 @@ describe('GET /workspaces', () => {
     expect(response.text).toBe('No workspaces found.');
   });
 
-  it('should return workspaces summary for authorized user', async () => {
+  it('should return workspaces for authorized user', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ user: userId, role: 'admin' }],
+      members: [{ user: userId, role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -77,7 +78,7 @@ describe('POST /workspaces', () => {
     const response = await supertest(app)
       .post('/workspaces')
       .set('Authorization', `Bearer ${token}`)
-      .send({ name: 'W' })
+      .send({ name: 'W' }) // Name is too short
       .expect(400);
 
     expect(response.text).toBe('Invalid payload.');
@@ -111,8 +112,10 @@ describe('GET /workspaces/:workspaceId', () => {
   });
 
   it('should return 404 for authorized user when workspace is not found', async () => {
+    const newWorkspaceId = new Types.ObjectId().toString();
+
     const response = await supertest(app)
-      .get('/workspaces/5f9d3b3c7f3dfe5a2f3f7f3d')
+      .get(`/workspaces/${newWorkspaceId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(404);
 
@@ -120,25 +123,10 @@ describe('GET /workspaces/:workspaceId', () => {
   });
 
   it('should return 403 for authorized user without access to workspace', async () => {
+    const newUserId = new Types.ObjectId().toString();
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'admin' }],
-    });
-
-    const response = await supertest(app)
-      .get(`/workspaces/${workspace._id.toString()}`)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(403);
-
-    expect(response.text).toBe(
-      'You do not have permission to access this workspace.'
-    );
-  });
-
-  it('should return 403 for authorized user without admin role', async () => {
-    const workspace = await Workspace.create({
-      name: 'Test Workspace',
-      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'viewer' }],
+      members: [{ user: newUserId, role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -154,7 +142,12 @@ describe('GET /workspaces/:workspaceId', () => {
   it('should return workspace for authorized user', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ user: userId, role: 'admin' }],
+      members: [
+        {
+          user: userId,
+          role: 'admin',
+        },
+      ],
     });
 
     const response = await supertest(app)
@@ -165,9 +158,6 @@ describe('GET /workspaces/:workspaceId', () => {
     expect(response.body).toMatchObject({
       id: workspace._id.toString(),
       name: 'Test Workspace',
-      users: [{ user: { id: userId }, role: 'admin' }],
-      boards: [],
-      textChannels: [],
       createdAt: workspace.createdAt.toISOString(),
       updatedAt: workspace.updatedAt.toISOString(),
     });
@@ -191,8 +181,9 @@ describe('DELETE /workspaces/:workspaceId', () => {
   });
 
   it('should return 404 for authorized user when workspace is not found', async () => {
+    const newWorkspaceId = new Types.ObjectId().toString();
     const response = await supertest(app)
-      .delete('/workspaces/5f9d3b3c7f3dfe5a2f3f7f3d')
+      .delete(`/workspaces/${newWorkspaceId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(404);
 
@@ -200,9 +191,10 @@ describe('DELETE /workspaces/:workspaceId', () => {
   });
 
   it('should return 403 for authorized user without access to workspace', async () => {
+    const newUserId = new Types.ObjectId().toString();
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'admin' }],
+      members: [{ user: newUserId, role: 'admin' }],
     });
 
     const response = await supertest(app)
@@ -218,7 +210,7 @@ describe('DELETE /workspaces/:workspaceId', () => {
   it('should return 403 for authorized user without admin role', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ user: '5f9d3b3c7f3dfe5a2f3f7f3d', role: 'viewer' }],
+      members: [{ user: userId, role: 'viewer' }],
     });
 
     const response = await supertest(app)
@@ -234,7 +226,7 @@ describe('DELETE /workspaces/:workspaceId', () => {
   it('should delete workspace for authorized user', async () => {
     const workspace = await Workspace.create({
       name: 'Test Workspace',
-      users: [{ user: userId, role: 'admin' }],
+      members: [{ user: userId, role: 'admin' }],
     });
 
     await supertest(app)
@@ -243,7 +235,6 @@ describe('DELETE /workspaces/:workspaceId', () => {
       .expect(204);
 
     const deletedWorkspace = await Workspace.findById(workspace._id);
-
     expect(deletedWorkspace).toBeNull();
   });
 });

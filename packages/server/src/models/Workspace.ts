@@ -1,14 +1,22 @@
 import { model, Schema, Types } from 'mongoose';
-import { IUserRole, IUserRolePopulated, userRoleSchema } from './User';
-import { boardSchema, IBoard } from './Board';
-import { ITextChannel, textChannelSchema } from './TextChannel';
+
+export interface IMember {
+  user: Types.ObjectId;
+  role: 'admin' | 'editor' | 'viewer';
+}
+
+export const memberSchema = new Schema<IMember>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    role: { type: String, enum: ['admin', 'editor', 'viewer'], required: true },
+  },
+  { _id: false, timestamps: false }
+);
 
 export interface IWorkspace {
   _id: Types.ObjectId;
   name: string;
-  users: IUserRole[] | IUserRolePopulated[];
-  boards: IBoard[];
-  textChannels: ITextChannel[];
+  members: IMember[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,11 +24,9 @@ export interface IWorkspace {
 const workspaceSchema = new Schema<IWorkspace>(
   {
     name: { type: String, required: true },
-    users: { type: [userRoleSchema], default: [] },
-    boards: { type: [boardSchema], default: [] },
-    textChannels: { type: [textChannelSchema], default: [] },
+    members: { type: [memberSchema], required: true },
   },
   { timestamps: true }
 );
 
-export default model('Workspace', workspaceSchema);
+export default model<IWorkspace>('Workspace', workspaceSchema);

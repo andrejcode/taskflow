@@ -3,27 +3,27 @@ import { CREATE_WORKSPACE_MODAL } from '@/utils/constants';
 import { openModal } from '@/utils/modal';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import Workspaces from '../Workspaces';
-import WorkspaceSummaryProvider from '@/providers/WorkspaceSummaryProvider';
+import WorkspaceProvider from '@/providers/WorkspaceProvider';
 import UserProvider from '@/providers/UserProvider';
 import ToastProvider from '@/providers/ToastProvider';
 import { BrowserRouter as Router } from 'react-router';
-import { WorkspaceSummaryContextType } from '@/contexts/WorkspaceSummaryContext';
+import { WorkspaceContextType } from '@/contexts/WorkspacesContext';
 
 vi.mock('@/utils/modal', () => ({
   openModal: vi.fn(),
 }));
 
-const mockWorkspaceSummaryContext: WorkspaceSummaryContextType = {
-  workspacesSummary: [],
+const mockWorkspaceContext: WorkspaceContextType = {
+  workspaces: [],
   isLoading: false,
   errorMessage: '',
-  addWorkspaceSummary: vi.fn(),
-  removeWorkspaceSummary: vi.fn(),
+  addWorkspace: vi.fn(),
+  removeWorkspace: vi.fn(),
 };
 
 // Mock the hook once with the mockImplementation
-vi.mock('@/hooks/useWorkspaceSummaryContext', () => ({
-  default: vi.fn(() => mockWorkspaceSummaryContext),
+vi.mock('@/hooks/useWorkspaceContext', () => ({
+  default: vi.fn(() => mockWorkspaceContext),
 }));
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -31,7 +31,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
     <Router>
       <ToastProvider>
         <UserProvider>
-          <WorkspaceSummaryProvider>{children}</WorkspaceSummaryProvider>
+          <WorkspaceProvider>{children}</WorkspaceProvider>
         </UserProvider>
       </ToastProvider>
     </Router>
@@ -42,9 +42,9 @@ describe('Workspaces', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockWorkspaceSummaryContext.workspacesSummary = [];
-    mockWorkspaceSummaryContext.isLoading = false;
-    mockWorkspaceSummaryContext.errorMessage = '';
+    mockWorkspaceContext.workspaces = [];
+    mockWorkspaceContext.isLoading = false;
+    mockWorkspaceContext.errorMessage = '';
   });
 
   it('displays message when there are no workspaces', () => {
@@ -60,7 +60,7 @@ describe('Workspaces', () => {
   });
 
   it('displays newly created workspace', () => {
-    mockWorkspaceSummaryContext.workspacesSummary = [
+    mockWorkspaceContext.workspaces = [
       { id: '1', name: 'Workspace 1', createdAt: new Date(), updatedAt: new Date() },
     ];
 
@@ -69,13 +69,13 @@ describe('Workspaces', () => {
   });
 
   it('displays loading spinner when loading', () => {
-    mockWorkspaceSummaryContext.isLoading = true;
+    mockWorkspaceContext.isLoading = true;
     render(<Workspaces />, { wrapper: TestWrapper });
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
   it('displays error message when there is an error', () => {
-    mockWorkspaceSummaryContext.errorMessage = 'Error Message';
+    mockWorkspaceContext.errorMessage = 'Error Message';
     render(<Workspaces />, { wrapper: TestWrapper });
 
     const alert = screen.getByTestId('alert');

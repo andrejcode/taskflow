@@ -5,7 +5,7 @@ import NotFound from '../pages/NotFound';
 import Home from '../pages/Home';
 import { beforeAll, describe, expect, it } from 'vitest';
 import ToastProvider from '@/providers/ToastProvider';
-import WorkspaceSummaryProvider from '@/providers/WorkspaceSummaryProvider';
+import WorkspaceProvider from '@/providers/WorkspaceProvider';
 import UserProvider from '@/providers/UserProvider';
 import ThemeProvider from '@/providers/ThemeProvider';
 
@@ -15,9 +15,9 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
       <ToastProvider>
         <MemoryRouter initialEntries={['/']}>
           <UserProvider>
-            <WorkspaceSummaryProvider>
+            <WorkspaceProvider>
               <Routes>{children}</Routes>
-            </WorkspaceSummaryProvider>
+            </WorkspaceProvider>
           </UserProvider>
         </MemoryRouter>
       </ToastProvider>

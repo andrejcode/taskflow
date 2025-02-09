@@ -12,7 +12,7 @@ import NotFound from './pages/NotFound.tsx';
 import Profile from './pages/Profile.tsx';
 import UserProvider from './providers/UserProvider.tsx';
 import ThemeProvider from './providers/ThemeProvider.tsx';
-import WorkspaceSummaryProvider from './providers/WorkspaceSummaryProvider.tsx';
+import WorkspaceProvider from './providers/WorkspaceProvider.tsx';
 import ToastProvider from './providers/ToastProvider.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import './index.css';
@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
     <Router>
       <ToastProvider>
         <UserProvider>
-          <WorkspaceSummaryProvider>
+          <WorkspaceProvider>
             <ThemeProvider>
               <Routes>
                 <Route element={<RootLayout />}>
@@ -60,7 +60,7 @@ createRoot(document.getElementById('root')!).render(
                 </Route>
               </Routes>
             </ThemeProvider>
-          </WorkspaceSummaryProvider>
+          </WorkspaceProvider>
         </UserProvider>
       </ToastProvider>
     </Router>

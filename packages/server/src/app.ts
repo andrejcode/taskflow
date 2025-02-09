@@ -3,7 +3,7 @@ import cors from 'cors';
 import userRouter from './routers/userRouter';
 import workspaceRouter from './routers/workspaceRouter';
 import boardRouter from './routers/boardRouter';
-
+import channelRouter from './routers/channelRouter';
 export default function createApp() {
   const app = express();
 
@@ -17,6 +17,7 @@ export default function createApp() {
   app.use('/users', userRouter);
   app.use('/workspaces', workspaceRouter);
   app.use('/workspaces/:workspaceId/boards', boardRouter);
+  app.use('/workspaces/:workspaceId/channels', channelRouter);
 
   app.all('*', (_req: Request, res: Response) => {
     res.sendStatus(404);

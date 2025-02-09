@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import Modal from './ui/Modal';
 import useToastContext from '@/hooks/useToastContext';
 import useUserContext from '@/hooks/useUserContext';
-import useWorkspaceSummaryContext from '@/hooks/useWorkspaceSummaryContext';
+import useWorkspaceContext from '@/hooks/useWorkspaceContext';
 import { openModal } from '@/utils/modal';
 import { DELETE_WORKSPACE_MODAL } from '@/utils/constants';
 import { WorkspaceDto } from '@server/shared/dtos';
@@ -10,7 +10,7 @@ import { WorkspaceDto } from '@server/shared/dtos';
 export default function WorkspaceSettings({ workspace }: { workspace: WorkspaceDto }) {
   const { token } = useUserContext();
   const { addToast } = useToastContext();
-  const { removeWorkspaceSummary } = useWorkspaceSummaryContext();
+  const { removeWorkspace } = useWorkspaceContext();
   const navigate = useNavigate();
 
   const handleDeleteWorkspace = async () => {
@@ -24,7 +24,7 @@ export default function WorkspaceSettings({ workspace }: { workspace: WorkspaceD
 
     if (response.ok) {
       void navigate('/workspaces');
-      removeWorkspaceSummary(workspace.id);
+      removeWorkspace(workspace.id);
       addToast('Workspace deleted successfully.', 'success');
     } else {
       addToast('Failed to delete workspace.', 'error');
