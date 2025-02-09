@@ -11,7 +11,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     exclude: ['e2e/*'],
-    setupFiles: ['./vitest.setup.ts'],
+    setupFiles: ['src/setupTests.ts'],
   },
   server: {
     proxy: {
