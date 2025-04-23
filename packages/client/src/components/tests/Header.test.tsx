@@ -93,6 +93,7 @@ describe('Header', () => {
         {
           id: '1',
           name: 'Workspace 1',
+          members: [],
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -138,6 +139,7 @@ describe('Header', () => {
         {
           id: '1',
           name: 'Workspace 1',
+          members: [],
           createdAt: new Date(),
           updatedAt: new Date(),
         },
